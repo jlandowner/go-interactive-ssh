@@ -1,4 +1,4 @@
-package interactive-ssh
+package issh
 
 // Prompt represent ssh prompt pettern used in check whether command is finished.
 // Example:

@@ -1,4 +1,4 @@
-package interactive-ssh
+package issh
 
 import (
 	"errors"
