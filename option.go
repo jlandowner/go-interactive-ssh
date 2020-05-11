@@ -1,4 +1,4 @@
-package go-interactive-ssh
+package interactive-ssh
 
 import (
 	"time"

@@ -1,4 +1,4 @@
-package go-interactive-ssh
+package interactive-ssh
 
 // Prompt represent ssh prompt pettern used in check whether command is finished.
 // Example:
