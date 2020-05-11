@@ -1,4 +1,4 @@
-package github.com/jlandowner/go-interactive-ssh
+package go-interactive-ssh
 
 import (
 	"time"
