@@ -131,11 +131,11 @@ func (i *Client) Run(ctx context.Context, cmds []*Command) error {
 					return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", i.Host, nextCmd.Input, err)
 				}
 
-				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] ok", i.Host, nextCmd.Input)
+				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] done", i.Host, nextCmd.Input)
 
 			}
 
-			logf(cmd.OutputLevel, "[%v]: cmd [%v] ok", i.Host, cmd.Input)
+			logf(cmd.OutputLevel, "[%v]: cmd [%v] done", i.Host, cmd.Input)
 		}
 	}
 	session.Close()
