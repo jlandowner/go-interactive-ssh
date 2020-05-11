@@ -11,17 +11,17 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// IClient has configuration to interact a host
-type IClient struct {
+// Client has configuration to interact a host
+type Client struct {
 	Sshconfig *ssh.ClientConfig
 	Host      string
 	Port      string
 	Prompt    []Prompt
 }
 
-// New return new go-interactive-ssh client
-func New(sshconfig *ssh.ClientConfig, host string, port string, prompt []Prompt) *IClient {
-	return &IClient{
+// NewClient return new go-interactive-ssh client
+func NewClient(sshconfig *ssh.ClientConfig, host string, port string, prompt []Prompt) *Client {
+	return &Client{
 		Sshconfig: sshconfig,
 		Host:      host,
 		Port:      port,
@@ -30,7 +30,7 @@ func New(sshconfig *ssh.ClientConfig, host string, port string, prompt []Prompt)
 }
 
 // Run execute given commands in remote host
-func (i *IClient) Run(ctx context.Context, cmds []*Command) error {
+func (i *Client) Run(ctx context.Context, cmds []*Command) error {
 	url := i.Host + ":" + i.Port
 	client, err := ssh.Dial("tcp", url, i.Sshconfig)
 	if err != nil {
