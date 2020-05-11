@@ -31,7 +31,7 @@ func SwitchUser(user, password string, newUserPrompt Prompt) *Command {
 
 	callback := func(c *Command) (bool, error) {
 		time.Sleep(time.Second)
-		expect := "パスワード:" //TODO Password:
+		expect := "パスワード:" //TODO support "Password:" or other prompt pattern
 		if c.Result.Output[c.Result.Lines-1] != expect {
 			msg := fmt.Sprintf(
 				"wrong output in su expect %v got %v", expect, c.Result.Output[c.Result.Lines-1])
