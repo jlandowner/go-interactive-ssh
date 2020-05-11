@@ -13,8 +13,8 @@ type Prompt struct {
 }
 
 var (
-	// DefaultUbuntuPrompt is prompt pettern like "pi@raspberrypi:~ $ "
-	DefaultUbuntuPrompt = Prompt{
+	// DefaultPrompt is prompt pettern like "pi@raspberrypi:~ $ "
+	DefaultPrompt = Prompt{
 		SufixPattern:  '$',
 		SufixPosition: 2,
 	}

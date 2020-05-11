@@ -27,7 +27,7 @@ func TestRun(t *testing.T) {
 		},
 	}
 
-	Client := NewClient(config, h, "22", []Prompt{DefaultUbuntuPrompt, DefaultRootPrompt})
+	Client := NewClient(config, h, "22", []Prompt{DefaultPrompt, DefaultRootPrompt})
 
 	err := Client.Run(ctx, testSwitchUser())
 	if err != nil {
