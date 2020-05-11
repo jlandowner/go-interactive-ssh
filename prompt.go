@@ -1,4 +1,4 @@
-package main
+package github.com/jlandowner/go-interactive-ssh
 
 // Prompt represent ssh prompt pettern used in check whether command is finished.
 // Example:

@@ -1,4 +1,4 @@
-package main
+package github.com/jlandowner/go-interactive-ssh
 
 import (
 	"context"
@@ -75,7 +75,7 @@ func (i *IClient) Run(ctx context.Context, cmds []*Command) error {
 			return errors.New("canceled by context")
 
 		default:
-			logf(cmd, "[%v]: cmd [%v] starting...", i.Host, cmd.Input)
+			logf(cmd.OutputLevel, "[%v]: cmd [%v] starting...", i.Host, cmd.Input)
 
 			in <- cmd
 			err := cmd.wait(ctx, out)
@@ -83,7 +83,7 @@ func (i *IClient) Run(ctx context.Context, cmds []*Command) error {
 				if err != ErrReturnCodeNotZero {
 					return fmt.Errorf("[%v]: Error in cmd [%v]  %w", i.Host, cmd.Input, err)
 				}
-				logf(cmd, "[%v]: Error in cmd [%v] exited with Non-Zero %d", i.Host, cmd.Input, cmd.Result.ReturnCode)
+				logf(cmd.OutputLevel, "[%v]: Error in cmd [%v] exited with Non-Zero %d", i.Host, cmd.Input, cmd.Result.ReturnCode)
 			}
 
 			if outputs, ok := cmd.output(); ok {
@@ -109,7 +109,7 @@ func (i *IClient) Run(ctx context.Context, cmds []*Command) error {
 			}
 
 			if nextCmd != nil {
-				logf(cmd, "[%v]:   next cmd [%v] starting...", i.Host, nextCmd.Input)
+				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] starting...", i.Host, nextCmd.Input)
 
 				in <- nextCmd
 				err = nextCmd.wait(ctx, out)
@@ -117,11 +117,7 @@ func (i *IClient) Run(ctx context.Context, cmds []*Command) error {
 					if err != ErrReturnCodeNotZero {
 						return fmt.Errorf("[%v]: Error in cmd [%v]  %w", i.Host, cmd.Input, err)
 					}
-					logf(cmd, "[%v]:   Error in cmd [%v] exit with Non-Zero %d", i.Host, nextCmd.Input, nextCmd.Result.ReturnCode)
-				}
-				_, err := nextCmd.Callback(nextCmd)
-				if err != nil {
-					return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", i.Host, nextCmd.Input, err)
+					logf(nextCmd.OutputLevel, "[%v]:   Error in cmd [%v] exit with Non-Zero %d", i.Host, nextCmd.Input, nextCmd.Result.ReturnCode)
 				}
 
 				if outputs, ok := nextCmd.output(); ok {
@@ -129,14 +125,19 @@ func (i *IClient) Run(ctx context.Context, cmds []*Command) error {
 						fmt.Println(output)
 					}
 				}
-				logf(cmd, "[%v]:   next cmd [%v] ok", i.Host, nextCmd.Input)
+
+				_, err := nextCmd.Callback(nextCmd)
+				if err != nil {
+					return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", i.Host, nextCmd.Input, err)
+				}
+
+				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] ok", i.Host, nextCmd.Input)
 
 			}
 
-			logf(cmd, "[%v]: cmd [%v] ok", i.Host, cmd.Input)
+			logf(cmd.OutputLevel, "[%v]: cmd [%v] ok", i.Host, cmd.Input)
 		}
 	}
-	in <- NewCommand("exit") //TODO only when "in" not closed
 	session.Close()
 
 	return nil
@@ -191,9 +192,9 @@ func listener(w io.Writer, r io.Reader, prompts []Prompt) (chan<- *Command, <-ch
 	return in, out
 }
 
-func logf(cmd *Command, msg string, v ...interface{}) {
+func logf(level OutputLevel, msg string, v ...interface{}) {
 	format := "go-interactive-ssh: " + msg
-	if cmd.OutputLevel != Silent {
+	if level != Silent {
 		log.Printf(format, v...)
 	}
 }

@@ -1,4 +1,4 @@
-package main
+package github.com/jlandowner/go-interactive-ssh
 
 import (
 	"context"
