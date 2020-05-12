@@ -68,15 +68,3 @@ type withNextCommand func(c *Command) *Command
 func (w *withNextCommand) Apply(c *Command) {
 	c.NextCommand = *w
 }
-
-// WithDefaultNextCommandOption is option function called after Callback func return false
-func WithDefaultNextCommandOption(v func(c *Command) *Command) *withDefaultNextCommand {
-	opt := withDefaultNextCommand(v)
-	return &opt
-}
-
-type withDefaultNextCommand func(c *Command) *Command
-
-func (w *withDefaultNextCommand) Apply(c *Command) {
-	c.DefaultNextCommand = *w
-}

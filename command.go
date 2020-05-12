@@ -33,14 +33,13 @@ var (
 // OutputLevel is logging level of command. Secret command should be set Silent
 // Result is Command Output. You can use this in Callback, NextCommand, DefaultNextCommand functions.
 type Command struct {
-	Input              string
-	Callback           func(c *Command) (bool, error)
-	NextCommand        func(c *Command) *Command
-	DefaultNextCommand func(c *Command) *Command
-	ReturnCodeCheck    bool
-	OutputLevel        OutputLevel
-	Timeout            time.Duration
-	Result             *CommandResult
+	Input           string
+	Callback        func(c *Command) (bool, error)
+	NextCommand     func(c *Command) *Command
+	ReturnCodeCheck bool
+	OutputLevel     OutputLevel
+	Timeout         time.Duration
+	Result          *CommandResult
 }
 
 // CommandResult has command output and return code in remote host
@@ -108,8 +107,10 @@ func (c *Command) wait(ctx context.Context, out <-chan string) error {
 			}
 			return nil
 		case <-timeout.Done():
-			msg := fmt.Sprintf("[%v] is canceled by timeout or by parent", c.Input)
-			return errors.New(msg)
+			if c.OutputLevel == Silent {
+				return errors.New("canceled by timeout or by parent")
+			}
+			return fmt.Errorf("[%v] is canceled by timeout or by parent", c.Input)
 		}
 	}
 }
