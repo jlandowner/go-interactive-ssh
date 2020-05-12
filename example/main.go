@@ -20,9 +20,9 @@ func main() {
 		},
 	}
 
-	Client := issh.NewClient(config, "raspberrypi.local", "22", []issh.Prompt{issh.DefaultPrompt})
+	client := issh.NewClient(config, "raspberrypi.local", "22", []issh.Prompt{issh.DefaultPrompt})
 
-	err := Client.Run(ctx, commands())
+	err := client.Run(ctx, commands())
 	if err != nil {
 		log.Fatal(err)
 	}
