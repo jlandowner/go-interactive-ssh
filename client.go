@@ -30,9 +30,9 @@ func NewClient(sshconfig *ssh.ClientConfig, host string, port string, prompt []P
 }
 
 // Run execute given commands in remote host
-func (i *Client) Run(ctx context.Context, cmds []*Command) error {
-	url := i.Host + ":" + i.Port
-	client, err := ssh.Dial("tcp", url, i.Sshconfig)
+func (c *Client) Run(ctx context.Context, cmds []*Command) error {
+	url := c.Host + ":" + c.Port
+	client, err := ssh.Dial("tcp", url, c.Sshconfig)
 	if err != nil {
 		return fmt.Errorf("error in ssh.Dial to %v %w", url, err)
 	}
@@ -63,7 +63,7 @@ func (i *Client) Run(ctx context.Context, cmds []*Command) error {
 	if err != nil {
 		return fmt.Errorf("error in session.StdoutPipe to %v %w", url, err)
 	}
-	in, out := listener(w, r, i.Prompt)
+	in, out := listener(w, r, c.Prompt)
 	if err := session.Start("/bin/sh"); err != nil {
 		return fmt.Errorf("error in session.Start to %v %w", url, err)
 	}
@@ -75,15 +75,15 @@ func (i *Client) Run(ctx context.Context, cmds []*Command) error {
 			return errors.New("canceled by context")
 
 		default:
-			logf(cmd.OutputLevel, "[%v]: cmd [%v] starting...", i.Host, cmd.Input)
+			logf(cmd.OutputLevel, "[%v]: cmd [%v] starting...", c.Host, cmd.Input)
 
 			in <- cmd
 			err := cmd.wait(ctx, out)
 			if err != nil {
 				if err != ErrReturnCodeNotZero {
-					return fmt.Errorf("[%v]: Error in cmd [%v]  %w", i.Host, cmd.Input, err)
+					return fmt.Errorf("[%v]: Error in cmd [%v]  %w", c.Host, cmd.Input, err)
 				}
-				logf(cmd.OutputLevel, "[%v]: Error in cmd [%v] exited with Non-Zero %d", i.Host, cmd.Input, cmd.Result.ReturnCode)
+				logf(cmd.OutputLevel, "[%v]: Error in cmd [%v] exited with Non-Zero %d", c.Host, cmd.Input, cmd.Result.ReturnCode)
 			}
 
 			if outputs, ok := cmd.output(); ok {
@@ -94,30 +94,20 @@ func (i *Client) Run(ctx context.Context, cmds []*Command) error {
 
 			doNext, err := cmd.Callback(cmd)
 			if err != nil {
-				return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", i.Host, cmd.Input, err)
+				return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", c.Host, cmd.Input, err)
 			}
 
-			var nextCmd *Command
-			if doNext {
-				if cmd.NextCommand != nil {
-					nextCmd = cmd.NextCommand(cmd)
-				}
-			} else {
-				if cmd.DefaultNextCommand != nil {
-					nextCmd = cmd.DefaultNextCommand(cmd)
-				}
-			}
-
-			if nextCmd != nil {
-				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] starting...", i.Host, nextCmd.Input)
+			nextCmd := cmd.NextCommand(cmd)
+			if doNext && nextCmd != nil {
+				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] starting...", c.Host, nextCmd.Input)
 
 				in <- nextCmd
 				err = nextCmd.wait(ctx, out)
 				if err != nil {
 					if err != ErrReturnCodeNotZero {
-						return fmt.Errorf("[%v]: Error in cmd [%v]  %w", i.Host, cmd.Input, err)
+						return fmt.Errorf("[%v]: Error in cmd [%v]  %w", c.Host, cmd.Input, err)
 					}
-					logf(nextCmd.OutputLevel, "[%v]:   Error in cmd [%v] exit with Non-Zero %d", i.Host, nextCmd.Input, nextCmd.Result.ReturnCode)
+					logf(nextCmd.OutputLevel, "[%v]:   Error in cmd [%v] exit with Non-Zero %d", c.Host, nextCmd.Input, nextCmd.Result.ReturnCode)
 				}
 
 				if outputs, ok := nextCmd.output(); ok {
@@ -128,14 +118,14 @@ func (i *Client) Run(ctx context.Context, cmds []*Command) error {
 
 				_, err := nextCmd.Callback(nextCmd)
 				if err != nil {
-					return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", i.Host, nextCmd.Input, err)
+					return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", c.Host, nextCmd.Input, err)
 				}
 
-				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] done", i.Host, nextCmd.Input)
+				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] done", c.Host, nextCmd.Input)
 
 			}
 
-			logf(cmd.OutputLevel, "[%v]: cmd [%v] done", i.Host, cmd.Input)
+			logf(cmd.OutputLevel, "[%v]: cmd [%v] done", c.Host, cmd.Input)
 		}
 	}
 	session.Close()

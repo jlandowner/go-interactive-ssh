@@ -13,14 +13,22 @@ import (
 
 func TestRun(t *testing.T) {
 	h := os.Getenv("SSH_HOST_IP")
+	u := os.Getenv("SSH_LOGIN_USER")
 	p := os.Getenv("SSH_LOGIN_PASS")
-	if h == "" || p == "" {
-		t.Fatalf("undifined SSH_HOST_IP=%v, SSH_LOGIN_PASS=%v", h, p)
+	if h == "" {
+		h = "raspberrypi.local"
 	}
+	if u == "" {
+		u = "pi"
+	}
+	if p == "" {
+		p = "raspberry"
+	}
+
 	ctx := context.Background()
 
 	config := &ssh.ClientConfig{
-		User:            "pi",
+		User:            u,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Auth: []ssh.AuthMethod{
 			ssh.Password(p),
