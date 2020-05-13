@@ -3,7 +3,7 @@
 # go-interactive-ssh
 
 Go interactive ssh client. 
-You can also use each standard output in callback and check command's output is expected. 
+You can use each standard outputs in your Callback function and check command's output is expected. 
 
 ## Install
 
