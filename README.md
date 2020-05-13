@@ -57,9 +57,8 @@ func commands() []*issh.Command {
 	}
 }
 ```
-
-Command struct is below. 
-But you can easily generate by NewCommand function b
+You cam generate a Command by NewCommand()
+Command struct is here. 
 
 ```go:command.go
 // Command has Input config and Output in remote host.
