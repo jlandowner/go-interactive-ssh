@@ -58,7 +58,7 @@ func commands() []*issh.Command {
 	}
 }
 ```
-You cam generate a Command by NewCommand()
+You can generate a Command by NewCommand()
 
 Command struct is here. 
 
