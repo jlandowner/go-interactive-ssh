@@ -28,7 +28,6 @@ var (
 // Input is line of command execute in remote host.
 // Callback is called after input command is finished. You can check whether Output is exepected in this function.
 // NextCommand is called after Callback and called only Callback returns "true". NextCommand cannot has another NextCommand.
-// DefaultNextCommand is called after Callback and called only Callback returns "false".
 // ReturnCodeCheck is "true", Input is added ";echo $?" and check after Output is 0. Also you can manage retrun code in Callback.
 // OutputLevel is logging level of command. Secret command should be set Silent
 // Result is Command Output. You can use this in Callback, NextCommand, DefaultNextCommand functions.
