@@ -72,7 +72,7 @@ func testSwitchUser() []*Command {
 	var commands []*Command
 	commands = append(commands,
 		CheckUser("pi"),
-		SwitchUser("dummy", "dami-", DefaultRootPrompt),
+		SwitchUser("dummy", "dummy", DefaultRootPrompt),
 		CheckUser("dummy"),
 		NewCommand("id", WithOutputLevelOption(Output)),
 		ChangeDirectory("/tmp"))
