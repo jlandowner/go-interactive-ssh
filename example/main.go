@@ -32,8 +32,8 @@ func main() {
 func commands() []*issh.Command {
 	return []*issh.Command{
 		issh.CheckUser("pi"),
-		issh.NewCommand("id", issh.WithOutputLevelOption(issh.Output)),
 		issh.ChangeDirectory("/tmp"),
-		issh.NewCommand("ls -l"),
+		issh.NewCommand("sleep 2"),
+		issh.NewCommand("ls -l", issh.WithOutputLevelOption(issh.Output)),
 	}
 }
