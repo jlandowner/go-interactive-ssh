@@ -3,6 +3,7 @@
 # go-interactive-ssh
 
 Go interactive ssh client. 
+
 You can use each standard outputs in your Callback function and check command's output is expected. 
 
 ## Install
@@ -58,6 +59,7 @@ func commands() []*issh.Command {
 }
 ```
 You cam generate a Command by NewCommand()
+
 Command struct is here. 
 
 ```go:command.go
