@@ -97,8 +97,9 @@ func (c *Client) Run(ctx context.Context, cmds []*Command) error {
 				return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", c.Host, cmd.Input, err)
 			}
 
-			nextCmd := cmd.NextCommand(cmd)
-			if doNext && nextCmd != nil {
+			if doNext && cmd.NextCommand != nil {
+				nextCmd := cmd.NextCommand(cmd)
+
 				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] starting...", c.Host, nextCmd.Input)
 
 				in <- nextCmd
