@@ -20,12 +20,14 @@ type Client struct {
 }
 
 // NewClient return new go-interactive-ssh client
-func NewClient(sshconfig *ssh.ClientConfig, host string, port string, prompt []Prompt) *Client {
+// prompts []Prompt is list of all expected prompt pettern.
+// for example if you use normal user and switch to root user, '$' and '#' prompts must be given.
+func NewClient(sshconfig *ssh.ClientConfig, host string, port string, prompts []Prompt) *Client {
 	return &Client{
 		Sshconfig: sshconfig,
 		Host:      host,
 		Port:      port,
-		Prompt:    prompt,
+		Prompt:    prompts,
 	}
 }
 
