@@ -18,7 +18,7 @@ var (
 		SufixPattern:  '$',
 		SufixPosition: 2,
 	}
-	// DefaultRootPrompt is prompt pettern like "pi@raspberrypi:~ $ "
+	// DefaultRootPrompt is prompt pettern like "# "
 	DefaultRootPrompt = Prompt{
 		SufixPattern:  '#',
 		SufixPosition: 2,
