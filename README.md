@@ -102,7 +102,7 @@ var (
 )
 ```
 
-### Run and Command struct
+### Run by Command struct
 
 All you have to do is just give Run() of this client a list of commands you want to execute in a remote host.
 
