@@ -18,6 +18,9 @@ var (
 	// DefaultCallback is called after Command and just sleep in a second. You can change by WithCallbackOption
 	DefaultCallback = func(c *Command) (bool, error) {
 		time.Sleep(time.Second)
+		if c.Result.ReturnCode != 0 {
+			return false, ErrReturnCodeNotZero
+		}
 		return true, nil
 	}
 	// ErrReturnCodeNotZero is error in command exit with non zero
