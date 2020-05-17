@@ -72,8 +72,7 @@ func testSwitchUser() []*Command {
 	var commands []*Command
 	commands = append(commands,
 		CheckUser("pi"),
-		SwitchUser("dummy", "dummy", DefaultRootPrompt),
-		CheckUser("dummy"),
+		SwitchUser("dummy", "dummy", DefaultRootPrompt), //TODO change user to switch
 		NewCommand("id", WithOutputLevelOption(Output)),
 		ChangeDirectory("/tmp"))
 
