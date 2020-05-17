@@ -6,7 +6,7 @@ Go interactive ssh client.
 
 You can use each standard outputs in your Callback function and check command's output is expected. 
 
-this client support for windows, macos, and linux.
+Supports use from windows, macos, linux as client access to linux remote hosts.
 
 ## Install
 
