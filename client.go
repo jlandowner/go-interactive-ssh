@@ -82,10 +82,7 @@ func (c *Client) Run(ctx context.Context, cmds []*Command) error {
 			in <- cmd
 			err := cmd.wait(ctx, out)
 			if err != nil {
-				if err != ErrReturnCodeNotZero {
-					return fmt.Errorf("[%v]: Error in cmd [%v]  %w", c.Host, cmd.Input, err)
-				}
-				logf(cmd.OutputLevel, "[%v]: Error in cmd [%v] exited with Non-Zero %d", c.Host, cmd.Input, cmd.Result.ReturnCode)
+				return fmt.Errorf("[%v]: Error in cmd [%v] at waiting %w", c.Host, cmd.Input, err)
 			}
 
 			if outputs, ok := cmd.output(); ok {
@@ -107,10 +104,7 @@ func (c *Client) Run(ctx context.Context, cmds []*Command) error {
 				in <- nextCmd
 				err = nextCmd.wait(ctx, out)
 				if err != nil {
-					if err != ErrReturnCodeNotZero {
-						return fmt.Errorf("[%v]: Error in cmd [%v]  %w", c.Host, cmd.Input, err)
-					}
-					logf(nextCmd.OutputLevel, "[%v]:   Error in cmd [%v] exit with Non-Zero %d", c.Host, nextCmd.Input, nextCmd.Result.ReturnCode)
+					return fmt.Errorf("[%v]: Error in next cmd [%v] at waiting %w", c.Host, cmd.Input, err)
 				}
 
 				if outputs, ok := nextCmd.output(); ok {
@@ -121,7 +115,7 @@ func (c *Client) Run(ctx context.Context, cmds []*Command) error {
 
 				_, err := nextCmd.Callback(nextCmd)
 				if err != nil {
-					return fmt.Errorf("[%v]: Error in cmd [%v] Callback %w", c.Host, nextCmd.Input, err)
+					return fmt.Errorf("[%v]: Error in next cmd [%v] Callback %w", c.Host, nextCmd.Input, err)
 				}
 
 				logf(nextCmd.OutputLevel, "[%v]:   next cmd [%v] done", c.Host, nextCmd.Input)

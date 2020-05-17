@@ -17,9 +17,9 @@ const (
 var (
 	// DefaultCallback is called after Command and just sleep in a second. You can change by WithCallbackOption
 	DefaultCallback = func(c *Command) (bool, error) {
-		time.Sleep(time.Second)
+		time.Sleep(time.Millisecond * 500)
 		if c.Result.ReturnCode != 0 {
-			return false, ErrReturnCodeNotZero
+			return false, fmt.Errorf("cmd [%v] %v", c.Input, ErrReturnCodeNotZero)
 		}
 		return true, nil
 	}
@@ -95,17 +95,16 @@ func (c *Command) wait(ctx context.Context, out <-chan string) error {
 			c.Result.Lines = len(c.Result.Output)
 
 			if c.ReturnCodeCheck {
-				if len([]byte(v)) == 0 {
-					return errors.New("output is 0 byte")
+				if c.Result.Lines-2 < 0 {
+					return fmt.Errorf("Couldn't check return code lines not enough %v", c.Result.Lines)
 				}
 
-				ok, err := c.checkReturnCode()
+				returnCode, err := strconv.Atoi(c.Result.Output[c.Result.Lines-2])
 				if err != nil {
-					return err
+					return fmt.Errorf("Couldn't check retrun code %v", err)
 				}
-				if !ok {
-					return ErrReturnCodeNotZero
-				}
+
+				c.Result.ReturnCode = returnCode
 			}
 			return nil
 		case <-timeout.Done():
@@ -115,23 +114,6 @@ func (c *Command) wait(ctx context.Context, out <-chan string) error {
 			return fmt.Errorf("[%v] is canceled by timeout or by parent", c.Input)
 		}
 	}
-}
-
-func (c *Command) checkReturnCode() (bool, error) {
-	if c.Result.Lines-2 < 0 {
-		return false, errors.New("Couldn't check return code")
-	}
-
-	returnCode, err := strconv.Atoi(c.Result.Output[c.Result.Lines-2])
-	if err != nil {
-		return false, err
-	}
-
-	c.Result.ReturnCode = returnCode
-	if c.Result.ReturnCode == 0 {
-		return true, nil
-	}
-	return false, nil
 }
 
 func (c *Command) output() ([]string, bool) {
