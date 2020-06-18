@@ -4,9 +4,9 @@
 
 Go interactive ssh client. 
 
-You can use each standard outputs in your Callback function and check command's output is expected. 
+It make it possible to use each standard outputs by remote command lines in your Callback function.
 
-Supports use from windows, macos, linux as client access to linux remote host.
+Support use-case is ssh access from Windows, MacOS or Linux as client and access to Linux as a remote host.
 
 ## Install
 
@@ -65,14 +65,14 @@ func commands() []*issh.Command {
 
 ### Setup Client
 
-Setup Client by NewClient().
+Setup Client by `NewClient()`.
 
 ```go:client.go
 func NewClient(sshconfig *ssh.ClientConfig, host string, port string, prompts []Prompt) *Client 
 ```
 SSH client settings is the same as standard `ssh.ClientConfig`.
 
-As the last argument, `[]Prompt` is a list of `Prompt` struct.
+The last argument is `[]Prompt`, which is a list of `Prompt` struct.
 
 `Prompt` is used to confirm whether command execution is completed in the SSH login shell.
 
@@ -83,7 +83,7 @@ type Prompt struct {
 }
 ```
 
-Normally, a prompt is like `pi@raspberrypi: ~ $`, so the '$' and '#' prompts are predefined in the package.
+Normally, a prompt is like `pi@raspberrypi: ~ $`, so '$' and '#' prompts are predefined in the package.
 
 Client wait until each command outputs match this.
 
@@ -104,13 +104,13 @@ var (
 
 ### Run by Command struct
 
-All you have to do is just give Run() of this client a list of commands you want to execute in a remote host.
+All you have to do is just `Run()` with a list of commands you want to execute in a remote host.
 
 ```go:client.go
 func (c *Client) Run(ctx context.Context, cmds []*Command) error
 ```
 
-The command is passed as a Command struct that contains the expected result, callback function, and so on.
+The command is passed as a `Command` struct that contains some options, a callback function and also its results.
 
 ```go:command.go
 // Command has Input config and Output in remote host.
@@ -131,13 +131,13 @@ type Command struct {
 }
 ```
 
-You can generate a Command by NewCommand()
+You can generate a `Command` struct by `NewCommand()`
 
 ```go: command.go
 func NewCommand(input string, options ...Option) *Command
 ```
 
-Other than Input, set it with a function that implements the Option interface starting with `With...`.
+In addition to `Input` which is a command sent to remote shell, it can be set some options with a function that implements the `Option` interface named `WithXXXOption()`.
 
 
 ```go: option.go
@@ -148,22 +148,26 @@ func WithCallbackOption(v func (c *Command) (bool, error)) *withCallback
 func WithNextCommandOption(v func (c *Command) * Command) *withNextCommand
 ```
 
-By default, "; echo $?" is added to the command passed to all Input and executed, and the return code is checked.
-If you do not want to check the return code, such as when command has a standard input, add `WithNoCheckReturnCodeOption()`.
+By default, all `Input` is added "; echo $?" and the return code is checked.
+If you do not want to check the return code, such as when command has standard inputs, add `WithNoCheckReturnCodeOption()` option to `NewCommand()`.
 
+```go
+cmd := issh.NewCommand("ls -l")                                // input is "ls -l; echo $?" and checked if return code is 0
+cmd := issh.NewCommand("ls -l", WithNoCheckReturnCodeOption()) // input is just "ls -l"
+```
 
 ## Expect
 
-As a function of Expect, you can use command output in Callback.
+As a feature like "Expect", you can use standard outputs in `Callback` function.
 
-Set callback function by NewCommand options
+You can describe a function executing after each commands (like checking output or handling errors executing), as `Command` struct that contains stdout is given by callback's argument.
+
+Set `Callback` function by a option of `NewCommand()`
 
 ```go:option.go
 // WithCallbackOption is option function called after command is finished
 func WithCallbackOption(v func(c *Command) (bool, error)) *withCallback
 ```
-
-In the callback function, the Command struct with the stdout is received as an argument, so you can describe your own processing from the command execution result.
 
 You can refer to the command execution result with `c.Result` in callback.
 
@@ -180,7 +184,7 @@ type CommandResult struct {
 }
 ```
 
-In addition, you can add a command that can be executed only when the callback function returns `true` by `WithNextCommandOption()`.
+Plus, you can add more command that can be executed only when the callback function returns `true`.
 
 ```go:option.go
 // WithNextCommandOption is option function called after Callback func return true
