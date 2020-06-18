@@ -4,7 +4,7 @@
 
 Go interactive ssh client. 
 
-It make it possible to use each standard outputs by remote command lines in your Callback function.
+It makes it possible to run commands in the remote shell and "Expect" each command's behaviors like checking output, handling errors and so on
 
 Support use-case is ssh access from Windows, MacOS or Linux as client and access to Linux as a remote host.
 
