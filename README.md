@@ -4,7 +4,7 @@
 
 Go interactive ssh client. 
 
-It makes it possible to run commands in remote shell and "Expect" each command's behaviors like checking output, handling errors and so on
+It makes it possible to run commands in remote shell and "Expect" each command's behaviors like checking output, handling errors and so on.
 
 Support use-case is ssh access from Windows, MacOS or Linux as client and access to Linux as a remote host.
 
