@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"sync"
 
 	"golang.org/x/crypto/ssh"
@@ -33,7 +34,7 @@ func NewClient(sshconfig *ssh.ClientConfig, host string, port string, prompts []
 
 // Run execute given commands in remote host
 func (c *Client) Run(ctx context.Context, cmds []*Command) error {
-	url := c.Host + ":" + c.Port
+	url := net.JoinHostPort(c.Host, c.Port)
 	client, err := ssh.Dial("tcp", url, c.Sshconfig)
 	if err != nil {
 		return fmt.Errorf("error in ssh.Dial to %v %w", url, err)
